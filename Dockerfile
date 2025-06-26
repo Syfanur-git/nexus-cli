@@ -27,4 +27,4 @@ WORKDIR /app
 COPY --from=builder /app/clients/cli/target/release/nexus-network .
 
 # ✅ Gunakan 2 threads agar stabil di Starter Plan
-ENTRYPOINT ["sh", "-c", "./nexus-network start --node-id 7898982 --max-threads 2 > output.log 2>&1"]
+ENTRYPOINT ["./nexus-network"]
