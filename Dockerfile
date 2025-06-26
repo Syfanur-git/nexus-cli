@@ -14,11 +14,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
                  WORKDIR /app/clients/cli
                  RUN cargo build --release --locked
 
-                 # Runtime Stage - dengan GLIBC 2.36
-                 FROM debian:bookworm-slim
-                 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+                 # Runtime Stage - gunakan Ubuntu 24.04 (GLIBC 2.39)
+                 FROM ubuntu:24.04
 
-                 WORKDIR /app
-                 COPY --from=builder /app/clients/cli/target/release/nexus-network .
+                 RUN apt-get update && apt-get install -y \
+                     ca-certificates && \
+                         rm -rf /var/lib/apt/lists/*
 
-                 ENTRYPOINT ["./nexus-network"]
+                         WORKDIR /app
+                         COPY --from=builder /app/clients/cli/target/release/nexus-network .
+
+                         ENTRYPOINT ["./nexus-network"]
