@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
                  WORKDIR /app/clients/cli
                  RUN cargo build --release --locked
 
-                 # Runtime Stage
-                 FROM debian:bullseye-slim
+                 # Runtime Stage - dengan GLIBC 2.36
+                 FROM debian:bookworm-slim
                  RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
                  WORKDIR /app
