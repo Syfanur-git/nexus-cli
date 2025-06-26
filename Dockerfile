@@ -1,15 +1,19 @@
-# Stage 1: Build
+# Build stage
 FROM rust:1.87 as builder
 
 WORKDIR /app
-
-COPY clients/cli/Cargo.toml clients/cli/Cargo.lock ./clients/cli/
-WORKDIR /app/clients/cli
-RUN cargo fetch
-
 COPY clients/cli ./clients/cli
-WORKDIR /app/clients/cli
 
-# Tambahkan debug build output agar tahu kenapa gagal
-RUN cargo build --release --locked || true
-RUN echo "====== BUILD LOG OUTPUT ======" && find /app/clients/cli/target/release/build -type f -exec cat {} \; || true
+WORKDIR /app/clients/cli
+RUN cargo build --release --locked
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y libssl3 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=builder /app/clients/cli/target/release/nexus-network .
+
+ENTRYPOINT ["./nexus-network"]
