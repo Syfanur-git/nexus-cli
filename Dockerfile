@@ -16,7 +16,7 @@ WORKDIR /app
 
 # Copy CLI project
 COPY clients/cli ./clients/cli
-COPY Cargo.toml Cargo.lock ./
+COPY clients/cli/Cargo.toml clients/cli/Cargo.lock ./
 
 # Build release binary
 WORKDIR /app/clients/cli
