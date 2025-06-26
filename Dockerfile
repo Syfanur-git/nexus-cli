@@ -16,4 +16,4 @@ RUN apt-get update && apt-get install -y libssl3 && \
 WORKDIR /app
 COPY --from=builder /app/clients/cli/target/release/nexus-network .
 
-ENTRYPOINT ["./nexus-network"]
+ENTRYPOINT ["./nexus-network", "start", "--node-id=7898982", "--max-threads=2"]
