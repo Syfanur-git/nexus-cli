@@ -1,30 +1,24 @@
-# ======================
-# 🏗 Build Stage
-# ======================
-FROM rust:1.85-slim AS builder
+# Build Stage
+FROM rust:1.87.0-slim as builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     pkg-config     libssl-dev     ca-certificates     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+        pkg-config \
+            libssl-dev \
+                ca-certificates \
+                 && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+                 WORKDIR /app
+                 COPY . .
 
-COPY clients/cli/Cargo.toml Cargo.toml
-COPY clients/cli/Cargo.lock Cargo.lock
+                 WORKDIR /app/clients/cli
+                 RUN cargo build --release --locked
 
-RUN cargo fetch --locked
+                 # Runtime Stage
+                 FROM debian:bullseye-slim
+                 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
-COPY . .
+                 WORKDIR /app
+                 COPY --from=builder /app/clients/cli/target/release/nexus-network .
 
-WORKDIR /app/clients/cli
-RUN cargo build --release --locked
-
-# ======================
-# �� Runtime Stage
-# ======================
-FROM gcr.io/distroless/cc
-
-WORKDIR /app
-
-COPY --from=builder /app/clients/cli/target/release/nexus-network .
-
-# ✅ Gunakan 2 threads agar stabil di Starter Plan
-ENTRYPOINT ["./nexus-network"]
+                 ENTRYPOINT ["./nexus-network"]
