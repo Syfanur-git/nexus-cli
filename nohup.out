@@ -1,0 +1,7 @@
+error: unexpected argument '--threads' found
+
+  tip: a similar argument exists: '--max-threads'
+
+Usage: nexus-network start --node-id <NODE_ID> --max-threads <MAX_THREADS>
+
+For more information, try '--help'.
