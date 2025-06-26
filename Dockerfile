@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends     build-essen
 WORKDIR /app
 
 COPY clients/cli/Cargo.toml Cargo.toml
-COPY Cargo.lock .
+COPY clients/cli/Cargo.lock Cargo.lock
 
 RUN cargo fetch --locked
 
