@@ -1,37 +1,30 @@
-# --- Build Stage ---
+# ======================
+# 🏗 Build Stage
+# ======================
 FROM rust:1.85-slim AS builder
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     pkg-config     libssl-dev     ca-certificates     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Cache dependencies
-COPY Cargo.toml Cargo.lock ./
+COPY clients/cli/Cargo.toml Cargo.toml
+COPY Cargo.lock .
+
 RUN cargo fetch --locked
 
-# Copy source code
 COPY . .
 
-# Build the actual app
+WORKDIR /app/clients/cli
 RUN cargo build --release --locked
 
-####################################################################################################
-## Final image
-####################################################################################################
-# # Start a new stage to create a smaller image without unnecessary build dependencies.
-# Use a minimal base image (distroless, alpine, scratch, etc.).
+# ======================
+# �� Runtime Stage
+# ======================
 FROM gcr.io/distroless/cc
 
 WORKDIR /app
 
-# Copy the compiled binary from the builder stage.
-COPY --from=builder /app/target/release/nexus-network .
+COPY --from=builder /app/clients/cli/target/release/nexus-network .
 
-ENTRYPOINT ["./nexus-network"]
+# ✅ Gunakan 2 threads agar stabil di Starter Plan
+ENTRYPOINT ["./nexus-network", "start", "--node-id", "7898982", "--max-threads", "2"]
