@@ -1,2 +1,2 @@
 #!/bin/bash
-/home/codespace/.nexus/bin/nexus-network start --node-id 7594984 --max-threads 4
+/home/codespace/.nexus/bin/nexus-network start --node-id 6844097 --max-threads 4
